@@ -73,6 +73,223 @@ const FleetManagementApp = () => {
     { id: 3, type: 'booking', message: 'New WhatsApp booking request received', time: '2 hours ago', read: false }
   ]);
 
+  // Add maintenance history data
+  const [maintenanceHistory, setMaintenanceHistory] = useState([
+    {
+      id: 'M001',
+      vehicleId: 'V003',
+      date: '2024-06-18',
+      type: 'Brake Inspection',
+      status: 'In Progress',
+      cost: 120,
+      technician: 'John Doe',
+      description: 'Full brake system inspection and pad replacement'
+    },
+    {
+      id: 'M002',
+      vehicleId: 'V003',
+      date: '2024-05-15',
+      type: 'Oil Change',
+      status: 'Completed',
+      cost: 75,
+      technician: 'Sarah Smith',
+      description: 'Regular oil and filter change'
+    }
+  ]);
+
+  // Add report data for last two days
+  const reportData = {
+    revenue: [
+      { day: 'Yesterday', amount: 2847 },
+      { day: 'Today', amount: 1950 }
+    ],
+    utilization: [
+      { day: 'Yesterday', rate: '78%' },
+      { day: 'Today', rate: '65%' }
+    ],
+    performance: [
+      { metric: 'Average Rental Duration', value: '2.4 days' },
+      { metric: 'Most Popular Vehicle', value: 'Toyota Camry' },
+      { metric: 'Maintenance Downtime', value: '8%' }
+    ]
+  };
+
+  // ... (previous code remains the same until the renderMaintenance function)
+
+  const renderMaintenance = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Wrench className="h-5 w-5" />
+          Current Maintenance
+        </h3>
+        
+        {vehicles.filter(v => v.status === 'maintenance').length > 0 ? (
+          <div className="grid gap-4">
+            {vehicles.filter(v => v.status === 'maintenance').map(vehicle => (
+              <div key={vehicle.id} className="p-4  rounded-lg bg-orange-50">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div>
+                    <h4 className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</h4>
+                    <p className="text-sm text-gray-600">{vehicle.licensePlate}</p>
+                    <p className="mt-2 text-sm"><span className="font-medium">Issue:</span> {vehicle.issue}</p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div>
+                      <p className="text-sm"><span className="font-medium">Location:</span> {vehicle.location}</p>
+                      <p className="text-sm"><span className="font-medium">Mileage:</span> {vehicle.mileage.toLocaleString()} km</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+                        Update Status
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <h5 className="font-medium mb-2">Maintenance History</h5>
+                  <div className="space-y-3">
+                    {maintenanceHistory.filter(m => m.vehicleId === vehicle.id).map(record => (
+                      <div key={record.id} className="p-3 bg-white rounded ">
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium">{record.type}</p>
+                            <p className="text-sm text-gray-600">{record.date} • {record.technician}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`px-2 py-1 text-xs rounded ${
+                              record.status === 'Completed' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {record.status}
+                            </span>
+                            <p className="text-sm mt-1">${record.cost}</p>
+                          </div>
+                        </div>
+                        {record.description && (
+                          <p className="text-sm text-gray-600 mt-2">{record.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <Wrench className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <h4 className="text-lg font-medium">No vehicles in maintenance</h4>
+            <p className="text-gray-500">All vehicles are currently operational</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderReports = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Revenue Insights
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {reportData.revenue.map((day, index) => (
+            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-medium">{day.day}</h4>
+                  <p className="text-2xl font-bold text-green-600">${day.amount}</p>
+                </div>
+                <div className={`p-2 rounded-full ${
+                  index === 0 ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
+                }`}>
+                  <DollarSign className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full">
+                <div 
+                  className="h-full bg-green-500 rounded-full" 
+                  style={{ width: `${(day.amount / 3000) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Utilization Rates
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {reportData.utilization.map((day, index) => (
+            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-medium">{day.day}</h4>
+                  <p className="text-2xl font-bold text-blue-600">{day.rate}</p>
+                </div>
+                <div className={`p-2 rounded-full ${
+                  index === 0 ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'
+                }`}>
+                  <Users className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Utilization</span>
+                  <span>{day.rate}</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full">
+                  <div 
+                    className="h-full bg-blue-500 rounded-full" 
+                    style={{ width: day.rate }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Performance Metrics
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {reportData.performance.map((metric, index) => (
+            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full ${
+                  index === 0 
+                    ? 'bg-purple-100 text-purple-600' 
+                    : index === 1 
+                      ? 'bg-green-100 text-green-600' 
+                      : 'bg-orange-100 text-orange-600'
+                }`}>
+                  <BarChart3 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{metric.metric}</p>
+                  <p className="font-bold">{metric.value}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const [checkInData, setCheckInData] = useState({
     vehicleId: '',
     mileage: '',
@@ -197,7 +414,7 @@ const FleetManagementApp = () => {
             <span className="font-medium">Location:</span> {vehicle.location}
           </div>
           <div>
-            <span className="font-medium">Mileage:</span> {vehicle.mileage.toLocaleString()} mi
+            <span className="font-medium">Mileage:</span> {vehicle.mileage.toLocaleString()} km
           </div>
           <div>
             <span className="font-medium">Fuel:</span> {vehicle.fuelLevel}%
@@ -588,17 +805,11 @@ const FleetManagementApp = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'fleet' && renderFleetView()}
         {activeTab === 'checkin' && renderCheckIn()}
-        {activeTab === 'maintenance' && (
-          <div className="text-center py-12">
-            <Wrench className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">Maintenance Module</h3>
-            <p className="text-gray-500">Schedule and track vehicle maintenance</p>
-          </div>
-        )}
+       {activeTab === 'maintenance' && renderMaintenance()}
         {activeTab === 'reports' && (
           <div className="text-center py-12">
             <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
