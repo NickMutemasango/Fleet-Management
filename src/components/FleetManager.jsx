@@ -97,21 +97,34 @@ const FleetManagementApp = () => {
     }
   ]);
 
-  // Add report data for last two days
+  // Add new report data
   const reportData = {
-    revenue: [
-      { day: 'Yesterday', amount: 2847 },
-      { day: 'Today', amount: 1950 }
+    dailyStats: [
+      { 
+        date: 'Today', 
+        totalRevenue: 65, 
+        vehiclesRented: 1, 
+        vehiclesMaintenance: 1, 
+        availableVehicles: 1,
+        bookings: 3,
+        utilizationRate: '72%'
+      },
+      { 
+        date: 'Yesterday', 
+        totalRevenue: 3250, 
+        vehiclesRented: 9, 
+        vehiclesMaintenance: 1, 
+        availableVehicles: 4,
+        bookings: 15,
+        utilizationRate: '82%'
+      }
     ],
-    utilization: [
-      { day: 'Yesterday', rate: '78%' },
-      { day: 'Today', rate: '65%' }
+    popularVehicles: [
+      { model: 'Toyota Camry', rentals: 8 },
+      { model: 'Honda CR-V', rentals: 6 },
+      { model: 'Ford Mustang', rentals: 3 }
     ],
-    performance: [
-      { metric: 'Average Rental Duration', value: '2.4 days' },
-      { metric: 'Most Popular Vehicle', value: 'Toyota Camry' },
-      { metric: 'Maintenance Downtime', value: '8%' }
-    ]
+    revenueTrend: [2847, 3250, 2100, 2950, 3100] // Last 5 days
   };
 
   // ... (previous code remains the same until the renderMaintenance function)
@@ -189,104 +202,78 @@ const FleetManagementApp = () => {
     </div>
   );
 
-  const renderReports = () => (
+   const renderReports = () => (
     <div className="space-y-6">
+      {/* Daily Stats Section */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
           <BarChart3 className="h-5 w-5" />
-          Revenue Insights
+          Daily Statistics
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {reportData.revenue.map((day, index) => (
-            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{day.day}</h4>
-                  <p className="text-2xl font-bold text-green-600">${day.amount}</p>
+          {reportData.dailyStats.map((day, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium text-lg">{day.date}</h4>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                  {day.utilizationRate} utilization
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 bg-green-50 rounded">
+                  <p className="text-sm text-gray-600">Total Revenue</p>
+                  <p className="text-xl font-bold text-green-600">${day.totalRevenue}</p>
                 </div>
-                <div className={`p-2 rounded-full ${
-                  index === 0 ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
-                }`}>
-                  <DollarSign className="h-5 w-5" />
+                
+                <div className="p-3 bg-blue-50 rounded">
+                  <p className="text-sm text-gray-600">Vehicles Rented</p>
+                  <p className="text-xl font-bold text-blue-600">{day.vehiclesRented}</p>
+                </div>
+                
+                <div className="p-3 bg-orange-50 rounded">
+                  <p className="text-sm text-gray-600">In Maintenance</p>
+                  <p className="text-xl font-bold text-orange-600">{day.vehiclesMaintenance}</p>
+                </div>
+                
+                <div className="p-3 bg-purple-50 rounded">
+                  <p className="text-sm text-gray-600">Available Vehicles</p>
+                  <p className="text-xl font-bold text-purple-600">{day.availableVehicles}</p>
                 </div>
               </div>
-              <div className="mt-4 h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-full bg-green-500 rounded-full" 
-                  style={{ width: `${(day.amount / 3000) * 100}%` }}
-                ></div>
+              
+              <div className="mt-4 pt-4 border-t border-gray-300">
+                <p className="text-sm text-gray-600">Total Bookings: <span className="font-medium">{day.bookings}</span></p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Popular Vehicles Section */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          Utilization Rates
+          <Car className="h-5 w-5" />
+          Most Popular Vehicles
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {reportData.utilization.map((day, index) => (
-            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{day.day}</h4>
-                  <p className="text-2xl font-bold text-blue-600">{day.rate}</p>
-                </div>
-                <div className={`p-2 rounded-full ${
-                  index === 0 ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'
-                }`}>
-                  <Users className="h-5 w-5" />
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Utilization</span>
-                  <span>{day.rate}</span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full">
-                  <div 
-                    className="h-full bg-blue-500 rounded-full" 
-                    style={{ width: day.rate }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          Performance Metrics
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reportData.performance.map((metric, index) => (
-            <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div className="space-y-4">
+          {reportData.popularVehicles.map((vehicle, index) => (
+            <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-full ${
-                  index === 0 
-                    ? 'bg-purple-100 text-purple-600' 
-                    : index === 1 
-                      ? 'bg-green-100 text-green-600' 
-                      : 'bg-orange-100 text-orange-600'
-                }`}>
-                  <BarChart3 className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">{metric.metric}</p>
-                  <p className="font-bold">{metric.value}</p>
-                </div>
+                <span className="text-lg font-medium text-gray-500">{index + 1}</span>
+                <p className="font-medium">{vehicle.model}</p>
               </div>
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                {vehicle.rentals} rentals
+              </span>
             </div>
           ))}
         </div>
       </div>
+
+     
     </div>
   );
 
@@ -809,14 +796,8 @@ const FleetManagementApp = () => {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'fleet' && renderFleetView()}
         {activeTab === 'checkin' && renderCheckIn()}
-       {activeTab === 'maintenance' && renderMaintenance()}
-        {activeTab === 'reports' && (
-          <div className="text-center py-12">
-            <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">Analytics & Reports</h3>
-            <p className="text-gray-500">Revenue, utilization, and performance insights</p>
-          </div>
-        )}
+        {activeTab === 'maintenance' && renderMaintenance()}
+        {activeTab === 'reports' && renderReports()}
       </main>
     </div>
   );
